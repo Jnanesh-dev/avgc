@@ -18,7 +18,34 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Astraveda Global Care | World-Class Medical Tourism",
   description: "Find affordable, accredited medical care worldwide. Connect with top doctors and hospitals for cosmetic, dental, fertility, and more treatments.",
+  metadataBase: new URL('https://astraveda.com'), // Replace with actual domain in production
+  openGraph: {
+    title: "Astraveda Global Care | World-Class Medical Tourism",
+    description: "Find affordable, accredited medical care worldwide.",
+    url: 'https://astraveda.com',
+    siteName: 'Astraveda Global Care',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Astraveda Global Care",
+    description: "Premium Medical Tourism Facilitator",
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  themeColor: '#006d5b',
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
+
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -30,11 +57,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <AuthProvider>
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
         <SystemStatus />
       </body>
     </html>

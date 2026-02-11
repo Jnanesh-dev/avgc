@@ -1,5 +1,7 @@
+
 import Link from 'next/link';
-import { Send, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import Image from 'next/image';
+import { Send } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -9,12 +11,14 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="lg:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-6">
-                            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-bold">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
+                            <div className="relative w-32 h-12">
+                                <Image
+                                    src="/logo.png"
+                                    alt="Astraveda Global Care"
+                                    fill
+                                    className="object-contain object-left"
+                                />
                             </div>
-                            <span className="text-xl font-bold text-gray-900 tracking-tight">
-                                GlobalHealth
-                            </span>
                         </Link>
                         <p className="text-gray-500 text-sm leading-relaxed mb-8">
                             Pioneering the future of medical mobility and transparent healthcare access worldwide.
@@ -29,19 +33,19 @@ export default function Footer() {
                         <div>
                             <h4 className="font-bold text-gray-900 mb-6">Procedures</h4>
                             <ul className="space-y-3 text-sm text-gray-500">
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Dental Implants</Link></li>
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Joint Replacement</Link></li>
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Hair Transplant</Link></li>
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Cosmetic Surgery</Link></li>
+                                <li><Link href="/search?treatment=dental" className="hover:text-emerald-500 transition-colors">Dental Implants</Link></li>
+                                <li><Link href="/search?treatment=orthopedics" className="hover:text-emerald-500 transition-colors">Joint Replacement</Link></li>
+                                <li><Link href="/search?treatment=hair-transplant" className="hover:text-emerald-500 transition-colors">Hair Transplant</Link></li>
+                                <li><Link href="/search?treatment=cosmetic" className="hover:text-emerald-500 transition-colors">Cosmetic Surgery</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h4 className="font-bold text-gray-900 mb-6">Destinations</h4>
                             <ul className="space-y-3 text-sm text-gray-500">
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Turkey</Link></li>
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Mexico</Link></li>
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Thailand</Link></li>
-                                <li><Link href="#" className="hover:text-emerald-500 transition-colors">Germany</Link></li>
+                                <li><Link href="/search?destination=Turkey" className="hover:text-emerald-500 transition-colors">Turkey</Link></li>
+                                <li><Link href="/search?destination=Mexico" className="hover:text-emerald-500 transition-colors">Mexico</Link></li>
+                                <li><Link href="/search?destination=Thailand" className="hover:text-emerald-500 transition-colors">Thailand</Link></li>
+                                <li><Link href="/search?destination=Germany" className="hover:text-emerald-500 transition-colors">Germany</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -64,9 +68,9 @@ export default function Footer() {
 
                 <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 font-bold tracking-wider uppercase">
                     <div className="flex gap-6">
-                        <Link href="#" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link>
-                        <Link href="#" className="hover:text-emerald-500 transition-colors">Terms of Service</Link>
-                        <Link href="#" className="hover:text-emerald-500 transition-colors">Contact Us</Link>
+                        <Link href="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link>
+                        <Link href="/terms" className="hover:text-emerald-500 transition-colors">Terms of Service</Link>
+                        <Link href="/contact" className="hover:text-emerald-500 transition-colors">Contact Us</Link>
                     </div>
                 </div>
             </div>

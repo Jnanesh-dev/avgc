@@ -4,6 +4,7 @@ import { ArrowRight, Bone, Heart, Baby, Activity, Brain, User } from 'lucide-rea
 export default function PopularTreatments() {
     const treatments = [
         {
+            id: "orthopedics",
             name: "Knee Replacement",
             description: "Full and partial joint restoration using minimally invasive techniques and robotic assistance.",
             price: 4500,
@@ -12,6 +13,7 @@ export default function PopularTreatments() {
             bg: "bg-emerald-50"
         },
         {
+            id: "cardiology",
             name: "Heart Surgery",
             description: "Bypass surgery, valve replacement, and angioplasty performed by internationally certified cardiologists.",
             price: 12000,
@@ -20,6 +22,7 @@ export default function PopularTreatments() {
             bg: "bg-rose-50"
         },
         {
+            id: "fertility",
             name: "IVF & Fertility",
             description: "Advanced reproductive technologies including PGD/PGS testing with high success rates and privacy.",
             price: 3200,
@@ -28,6 +31,7 @@ export default function PopularTreatments() {
             bg: "bg-blue-50"
         },
         {
+            id: "hair-transplant",
             name: "Hair Transplant",
             description: "FUE and DHI adoption for natural looking results with lifetime warranty certificates.",
             price: 1800,
@@ -36,6 +40,7 @@ export default function PopularTreatments() {
             bg: "bg-amber-50"
         },
         {
+            id: "dental",
             name: "Dental Implants",
             description: "Titanium and Zirconia implants with immediate loading options and 3D smile design.",
             price: 850,
@@ -44,6 +49,7 @@ export default function PopularTreatments() {
             bg: "bg-cyan-50"
         },
         {
+            id: "neurosurgery",
             name: "Neurosurgery",
             description: "Complex spinal and brain surgeries led by top neurosurgeons in state-of-the-art facilities.",
             price: 9000,
@@ -69,26 +75,28 @@ export default function PopularTreatments() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {treatments.map((treatment, i) => (
-                        <div key={i} className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all border border-gray-100/50">
-                            <div className={`w-16 h-16 rounded-2xl ${treatment.bg} flex items-center justify-center mb-6`}>
-                                {treatment.icon}
-                            </div>
-
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">{treatment.name}</h3>
-                            <p className="text-gray-500 text-sm leading-relaxed mb-8 h-12 line-clamp-2">
-                                {treatment.description}
-                            </p>
-
-                            <div className="flex items-end justify-between border-t border-gray-50 pt-6">
-                                <div>
-                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Starting From</p>
-                                    <p className="text-3xl font-bold text-emerald-600">${treatment.price.toLocaleString()}</p>
+                        <Link href={`/search?treatment=${treatment.id}`} key={i} className="block group">
+                            <div className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all border border-gray-100/50 h-full">
+                                <div className={`w-16 h-16 rounded-2xl ${treatment.bg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                                    {treatment.icon}
                                 </div>
-                                <div className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg">
-                                    US Price: ${treatment.usPrice >= 10000 ? (treatment.usPrice / 1000) + "k+" : treatment.usPrice.toLocaleString() + "+"}
+
+                                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors">{treatment.name}</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 h-12 line-clamp-2">
+                                    {treatment.description}
+                                </p>
+
+                                <div className="flex items-end justify-between border-t border-gray-50 pt-6">
+                                    <div>
+                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Starting From</p>
+                                        <p className="text-3xl font-bold text-emerald-600">${treatment.price.toLocaleString()}</p>
+                                    </div>
+                                    <div className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-lg group-hover:bg-emerald-100 transition-colors">
+                                        US Price: ${treatment.usPrice >= 10000 ? (treatment.usPrice / 1000) + "k+" : treatment.usPrice.toLocaleString() + "+"}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

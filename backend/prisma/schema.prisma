@@ -1,0 +1,308 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// -- Core Entities --
+
+model Hospital {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  country         String
+  city            String
+  address         String
+  rating          Float
+  reviewCount     Int
+  accreditations  String // JSON string of string[]
+  specializations String // JSON string of string[]
+  description     String
+  features        String // JSON string of string[]
+  imageUrl        String?
+  
+  // PriceRange encoded as embedded fields or JSON? Keeping simple with embedded fields
+  priceMin        Float
+  priceMax        Float
+  currency        String
+
+  doctors         Doctor[]
+  treatments      Treatment[] // Implicit many-to-many or explict? Let's use implicit for simple "hospital offers treatment"
+}
+
+model Doctor {
+  id              String   @id @default(uuid())
+  userId          String?  @unique
+  user            User?    @relation(fields: [userId], references: [id])
+  name            String
+  slug            String   @unique
+  specialization  String
+  hospitalId      String
+  hospital        Hospital @relation(fields: [hospitalId], references: [id])
+  experience      Int
+  qualifications  String // JSON string
+  languages       String // JSON string
+  rating          Float
+  reviewCount     Int
+  imageUrl        String?
+  consultationFee Float?
+  currency        String?
+  availableDays   String // JSON string of days
+
+  consultations   Consultation[]
+  availabilities  DoctorAvailability[]
+}
+
+model Treatment {
+  id                  String   @id @default(uuid())
+  name                String
+  slug                String   @unique
+  category            String
+  description         String
+  startingPrice       Float
+  currency            String
+  averageDuration     String
+  recoveryTime        String
+  successRate         Float
+  popularDestinations String // JSON string (or relation to Destination?)
+  imageUrl            String?
+
+  hospitals           Hospital[] // Implicit m-n: Hospitals that offer this treatment
+}
+
+model Destination {
+  id                String   @id @default(uuid())
+  name              String
+  country           String
+  slug              String   @unique
+  description       String
+  costSavings       Float
+  popularTreatments String // JSON string
+  hospitalCount     Int
+  imageUrl          String?
+  
+  // Average Cost
+  flightPrice       Float
+  hotelPrice        Float
+  currency          String
+}
+
+// -- User / Patient Profile --
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String   // UserRole enum: PATIENT, DOCTOR, ADMIN
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patientProfile PatientProfile?
+  doctorProfile  Doctor?
+}
+
+
+model PatientProfile {
+  id                   String   @id @default(uuid())
+  userId               String?  @unique
+  user                 User?    @relation(fields: [userId], references: [id])
+  name                 String
+  email                String   @unique
+  profileImage         String?
+  journeyProgress      Int
+  procedure            String
+  destination          String
+  // Relationships
+  medicalJourney       MedicalJourney?
+  upcomingConsultations Consultation[] // Opposite relation field
+  
+  // Embedded objects as JSON or separate tables?
+  flightNotification   String? // JSON
+  
+  recoveryStatus       RecoveryStatus?
+  vitalSigns           VitalSigns[]
+  symptomLogs          SymptomLog[]
+  medications          MedicationItem[]
+  documents            Document[]
+  careTeam             CareTeamMember[]
+}
+
+model Document {
+  id          String         @id @default(uuid())
+  patientId   String
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  name        String
+  size        String
+  type        String
+  uploadedAt  DateTime       @default(now())
+  url         String?
+}
+
+model CareTeamMember {
+  id          String         @id @default(uuid())
+  patientId   String
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  name        String
+  role        String
+  avatarUrl   String?
+  online      Boolean        @default(false)
+  languages   String?        // JSON string
+}
+
+// -- Medical Journey --
+
+model MedicalJourney {
+  id          String         @id @default(uuid())
+  patientId   String         @unique
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  procedure   String
+  destination String
+  stages      JourneyStage[]
+}
+
+model JourneyStage {
+  id               String         @id @default(uuid())
+  journeyId        String
+  journey          MedicalJourney @relation(fields: [journeyId], references: [id])
+  name             String
+  status           String         // JourneyStageStatus enum as string
+  date             String?
+  description      String?
+}
+
+// -- Consultations & Booking --
+
+model Consultation {
+  id               String   @id @default(uuid())
+  doctorId         String
+  doctor           Doctor   @relation(fields: [doctorId], references: [id])
+  patientId        String?  // Optional link to registered patient
+  patientProfile   PatientProfile? @relation(fields: [patientId], references: [id])
+  
+  patientName      String
+  patientEmail     String
+  patientPhone     String?
+  date             String
+  time             String
+  timezone         String
+  consultationType String   // Enum
+  duration         Int
+  fee              Float
+  currency         String
+  status           String   // Enum
+  platform         String
+  medicalHistory   String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model DoctorAvailability {
+  id        String   @id @default(uuid())
+  doctorId  String
+  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+  date      String
+  timeSlots String   // JSON string of TimeSlot[]
+}
+
+// -- Messaging --
+
+model Conversation {
+  id               String    @id @default(uuid())
+  participantIds   String // JSON string
+  participantNames String // JSON string
+  unreadCount      Int       @default(0)
+  updatedAt        DateTime  @updatedAt
+  
+  messages         Message[]
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String
+  senderName     String
+  senderRole     String       // UserRole enum
+  content        String
+  type           String       // MessageType enum
+  timestamp      DateTime     @default(now())
+  read           Boolean      @default(false)
+  
+  attachments    String?      // JSON string
+  appointmentData String?     // JSON string
+}
+
+// -- Recovery Tracking --
+
+model RecoveryStatus {
+  id          String         @id @default(uuid())
+  patientId   String         @unique
+  patient     PatientProfile @relation(fields: [patientId], references: [id])
+  procedure   String
+  surgeryDate String
+  currentDay  Int
+  totalDays   Int
+  phase       String         // RecoveryPhase enum
+  discharged  Boolean
+}
+
+model VitalSigns {
+  id              String         @id @default(uuid())
+  patientId       String
+  patient         PatientProfile @relation(fields: [patientId], references: [id])
+  timestamp       DateTime       @default(now())
+  painLevel       Int
+  bodyTemperature Float
+  targetTempMin   Float
+  targetTempMax   Float
+  incisionPhotoUrl String?
+}
+
+model SymptomLog {
+  id        String         @id @default(uuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id])
+  date      String
+  timestamp DateTime       @default(now())
+  swelling  String
+  painLevel Int
+  redness   String
+  fatigue   String
+  notes     String?
+  photos    String? // JSON string
+}
+
+model MedicationItem {
+  id        String         @id @default(uuid())
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id])
+  name      String
+  dosage    String
+  time      String
+  completed Boolean
+  withFood  Boolean?
+  frequency String?
+  timing    String?
+}
+
+model EmergencyIndicator {
+  id        String @id @default(uuid())
+  condition String
+  detected  Boolean
+  // Global table or linked to patient? Usually linked, but type def implies global/state?
+  // User type def: interface EmergencyIndicator { id, condition, detected } 
+  // It seems generic. But logic implies per-patient check. I'll link to patient for correctness.
+  patientId String? 
+  // If not linked in type, I'll add it for DB correctness or leave as global config if that's what it meant.
+  // Given "checkEmergencyIndicators(patientId)", it must be per patient *calculated* or stored.
+  // I will check implementation. Usually calculated from Vitals.
+  // But if stored state, needs patientId. I'll add it.
+}
